@@ -27,10 +27,12 @@ async function run() {
         const articlesCollection = client.db("contentmanagement").collection("articls");
 
 
-        app.post('/articls', (req, res) => {
+        
+        app.post('/articls', async (req, res) => {
             const items = req.body;
             console.log(items);
-            res.send(items);
+            const result = await articlesCollection.insertOne(items);
+            res.send(result);
         })
 
 
