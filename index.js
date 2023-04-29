@@ -57,6 +57,27 @@ async function run() {
             res.send(result);
         })
 
+        app.put('/articls/:id', async (req, res) => {
+            const id = req.params.id;
+            const update = req.body;
+            console.log(id, update);
+
+            const query = { _id: new ObjectId(id) }
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    // plot: `A harvest of random numbers, such as: ${Math.random()}`,
+                    description: update.description,
+                    tag: update.tag,
+                    image: update.image,
+                    title: update.title,
+                },
+            };
+            const result = await articlesCollection.updateOne(query, updateDoc, options);
+            res.send(result);
+
+        })
+
 
 
     }
