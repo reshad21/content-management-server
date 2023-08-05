@@ -26,15 +26,16 @@ async function run() {
     try {
         const articlesCollection = client.db("contentmanagement").collection("articls");
 
-
-        
         app.post('/articls', async (req, res) => {
             const items = req.body;
             console.log(items);
-            const result = await articlesCollection.insertOne(items);
+            const newItem = {
+                ...items,
+                date: new Date() // add the current date and time
+            };
+            const result = await articlesCollection.insertOne(newItem);
             res.send(result);
         })
-
 
         app.get('/articls', async (req, res) => {
             const query = {};
@@ -67,16 +68,31 @@ async function run() {
             const updateDoc = {
                 $set: {
                     // plot: `A harvest of random numbers, such as: ${Math.random()}`,
+                    date: new Date(),
                     description: update.description,
                     tag: update.tag,
                     image: update.image,
                     title: update.title,
+
                 },
             };
             const result = await articlesCollection.updateOne(query, updateDoc, options);
             res.send(result);
 
         })
+
+        app.get('/articles/search/:key', async (req, res) => {
+            const searchText = req.params.key;
+            const query = {
+                "$or": [
+                    { title: { $regex: searchText, $options: 'i' } },
+                    // { description: { $regex: searchText, $options: 'i' } },
+                ],
+            };
+    
+            const result = await articlesCollection.find(query).toArray();
+            res.send(result);
+        });
 
 
 
